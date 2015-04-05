@@ -3,7 +3,7 @@
 
 // NOTE: IF YOU CHANGE THIS FILE / MERGE THIS FILE WITH CHANGES
 //
-//   ==> ALWAYS TRY TO COMPILE MARLIN WITH/WITHOUT "ULTIPANEL" / "ULTRALCD" / "SDSUPPORT" #define IN "Configuration.h" 
+//   ==> ALWAYS TRY TO COMPILE MARLIN WITH/WITHOUT "ULTIPANEL" / "ULTRALCD" / "SDSUPPORT" #define IN "Configuration.h"
 //   ==> ALSO TRY ALL AVAILABLE "LANGUAGE_CHOICE" OPTIONS
 
 // Languages
@@ -39,6 +39,9 @@
 #elif MOTHERBOARD == 88
 	#define MACHINE_NAME "Makibox"
 	#define FIRMWARE_URL "https://github.com/ErikZalm/Marlin/"
+#elif MOTHERBOARD == 85
+	#define MACHINE_NAME "Teensy3.1"
+	#define FIRMWARE_URL "https://github.com/PaulStoffregen/Marlin"
 #else
 	#ifdef CUSTOM_MENDEL_NAME
 		#define MACHINE_NAME CUSTOM_MENDEL_NAME
@@ -2597,7 +2600,7 @@
 	#define MSG_BABYSTEP_Y "Babystep Y"
 	#define MSG_BABYSTEP_Z "Babystep Z"
 	#define MSG_ENDSTOP_ABORT "Endstop deuseztat"
-	
+
 // Serial Console Messages
 
 	#define MSG_Enqueing "Zerrendan \""
@@ -2673,7 +2676,7 @@
 	#define MSG_BABYSTEPPING_Y "Babystepping Y"
 	#define MSG_BABYSTEPPING_Z "Babystepping Z"
 	#define MSG_SERIAL_ERROR_MENU_STRUCTURE "Akatsak menu-an"
-	
+
 #endif
 
 #endif // ifndef LANGUAGE_H

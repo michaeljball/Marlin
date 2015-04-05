@@ -497,7 +497,12 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define ABS_PREHEAT_FAN_SPEED 255   // Insert Value between 0 and 255
 
 //LCD and SD support
-//#define ULTRA_LCD  //general LCD support, also 16x2
+#define ULTRA_LCD  //general LCD support, also 16x2
+#define LCD_I2C_TYPE_MCP23008                            // Supports Adafruit LCD I2C backpack
+#define LCD_I2C_ADDRESS 0x20                             // Supports Adafruit LCD I2C backpack
+#define LCD_WIDTH 20
+#define LCD_HEIGHT 4
+
 //#define DOGLCD  // Support for SPI LCD 128x64 (Controller ST7565R graphic Display Family)
 //#define SDSUPPORT // Enable SD Card Support in Hardware Console
 //#define SDSLOW // Use slower SD transfer mode (not normally needed - uncomment if you're getting volume init error)

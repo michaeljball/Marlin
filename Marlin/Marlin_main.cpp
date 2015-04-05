@@ -47,6 +47,13 @@
 #include "language.h"
 #include "pins_arduino.h"
 #include "math.h"
+#include "QuadDecode.h"
+#include "QuadDecode_def.h"
+
+
+QuadDecode<1> xPosn;			  // Template using FTM1  for X axis Encoder
+QuadDecode<2> yPosn;			  // Template using FTM2  for Y axis Encoder
+
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -473,6 +480,7 @@ void setup()
   setup_killpin();
   setup_powerhold();
   MYSERIAL.begin(BAUDRATE);
+  delay(5000);                            // Teensy, allow time for serial port to connect and see output   
   SERIAL_PROTOCOLLNPGM("start");
   SERIAL_ECHO_START;
 
@@ -515,14 +523,14 @@ void setup()
 
   tp_init();    // Initialize temperature loop
   plan_init();  // Initialize planner;
-  watchdog_init();
-  st_init();    // Initialize stepper, this enables interrupts!
+ // watchdog_init();                                                     // Temporarily commented for debug
+//  st_init();    // Initialize stepper, this enables interrupts!        // Temporarily commented for debug
   setup_photpin();
   servo_init();
 
   lcd_init();
-  _delay_ms(1000);	// wait 1sec to display the splash screen
-
+ // _delay_ms(1000);	// wait 1sec to display the splash screen
+  delay(1000);
   #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
     SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
   #endif
