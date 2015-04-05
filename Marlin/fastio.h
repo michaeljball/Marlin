@@ -4013,7 +4013,7 @@ pins
 #endif // __AVR_ATmega1281__ || __AVR_ATmega2561__
 
 
-#if defined(__arm__) || defined(CORE_TEENSY) // Teensy 3.x
+#if defined(__arm__) || defined(CORE_TEENSY) || defined(__MK20DX128__) || defined(__MK20DX256__)// Teensy 3.x
 
 #define GPIO_BITBAND_ADDR(reg, bit) (((uint32_t)&(reg) - 0x40000000) * 32 + (bit) * 4 + 0x42000000)
 #define GPIO_BITBAND(reg, bit) (*(uint32_t *)GPIO_BITBAND_ADDR((reg), (bit)))

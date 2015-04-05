@@ -178,7 +178,7 @@ asm volatile ( \
 #define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIMSK1 |= (1<<OCIE1A)
 #define DISABLE_STEPPER_DRIVER_INTERRUPT() TIMSK1 &= ~(1<<OCIE1A)
 
-#elif defined(__arm__) && defined(IRQ_FTM2)
+#elif defined(__arm__) || defined(CORE_TEENSY) || defined(__MK20DX128__) || defined(__MK20DX256__) && defined(IRQ_FTM2)
 #define ENABLE_STEPPER_DRIVER_INTERRUPT()  NVIC_ENABLE_IRQ(IRQ_FTM2)
 #define DISABLE_STEPPER_DRIVER_INTERRUPT() NVIC_DISABLE_IRQ(IRQ_FTM2)
 #define ISR(func) static void func (void)
