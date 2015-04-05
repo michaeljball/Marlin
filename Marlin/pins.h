@@ -1867,7 +1867,7 @@
   http://www.pjrc.com/teensy/teensyduino.html
 * See http://reprap.org/wiki/Printrboard for more info
 * CLI build: DEFINES=AT90USBxx_TEENSYPP_ASSIGNMENTS HARDWARE_MOTHERBOARD=84  make
-* 
+*
 ****************************************************************************************/
 #if MOTHERBOARD == 84
 #define KNOWN_BOARD 1
@@ -1879,37 +1879,37 @@
 
 #define LARGE_FLASH        true
 
-/* 
+/*
 DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a TeensyBreadboard:
 
                                USB
            GND       GND |-----#####-----| +5V              ATX +5SB
-     ATX PS_ON    PWM 27 |b7   #####   b6| 26    PWM*       Stepper Enable 
-                  PWM  0 |d0           b5| 25    PWM*        
-                  PWM  1 |d1           b4| 24    PWM        
+     ATX PS_ON    PWM 27 |b7   #####   b6| 26    PWM*       Stepper Enable
+                  PWM  0 |d0           b5| 25    PWM*
+                  PWM  1 |d1           b4| 24    PWM
          X_MIN         2 |d2           b3| 23               MISO_PIN
          Y_MIN         3 |d3           b2| 22               MOSI_PIN
-         Z_MIN         4 |d4  * *      b1| 21               SCK_PIN       
-                       5 |d5  e e      b0| 20               SDSS              
-                LED    6 |d6  5 4      e7| 19               
-                       7 |d7           e6| 18               
-       LCD  RS         8 |e0             | GND              
-       LCD  EN         9 |e1   a4 a0    R| AREF             
-       LCD  D4        10 |c0   a5 a1   f0| 38 A0            ENC_1           
+         Z_MIN         4 |d4  * *      b1| 21               SCK_PIN
+                       5 |d5  e e      b0| 20               SDSS
+                LED    6 |d6  5 4      e7| 19
+                       7 |d7           e6| 18
+       LCD  RS         8 |e0             | GND
+       LCD  EN         9 |e1   a4 a0    R| AREF
+       LCD  D4        10 |c0   a5 a1   f0| 38 A0            ENC_1
        LCD  D5        11 |c1   a6 a2   f1| 39 A1            ENC_2
        LCD  D6        12 |c2   a7 a3   f2| 40 A2            ENC_CLK
-       LCD  D6        13 |c3           f3| 41 A3            
-      Bed Heat    PWM 14 |c4   V G R   f4| 42 A4            
- Extruder Heat    PWM 15 |c5   c n S   f5| 43 A5            
+       LCD  D6        13 |c3           f3| 41 A3
+      Bed Heat    PWM 14 |c4   V G R   f4| 42 A4
+ Extruder Heat    PWM 15 |c5   c n S   f5| 43 A5
            Fan    PWM 16 |c6   c d T   f6| 44 A6            Bed TC
-                      17 |c7   * * *   f7| 45 A7            Extruder TC * 4.7k * +5        
-                         -----------------                  
+                      17 |c7   * * *   f7| 45 A7            Extruder TC * 4.7k * +5
+                         -----------------
 
       Interior E4: 36, INT4
       Interior E5: 37, INT5
       Interior PA0-7: 28-35  -- Printrboard and Teensylu use these pins for step & direction:
              T++ PA Signal  Marlin
-    
+
        Z STEP  32 a4  a0 28 X STEP
        Z DIR   33 a5  a1 29 X DIR
        E STEP  34 a6  a2 30 Y STEP
@@ -1924,7 +1924,7 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
 
 #define X_STEP_PIN         28 //  0 Marlin
 #define X_DIR_PIN          29 //  1 Marlin
-#define X_ENABLE_PIN       26 
+#define X_ENABLE_PIN       26
 
 #define Y_STEP_PIN         30 //  2 Marlin
 #define Y_DIR_PIN          31 //  3
@@ -1954,7 +1954,7 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
 #define TEMP_2_PIN         -1
 
 #define SDPOWER            -1
-#define SDCARDDETECT       -1		
+#define SDCARDDETECT       -1
 #define SDSS               20 // 8
 #define LED_PIN             6
 #define PS_ON_PIN          27
@@ -1983,12 +1983,17 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
 #endif  // MOTHERBOARD == 84 (Teensy++2.0 Breadboard)
 
 
+
+
+
+
+
 /****************************************************************************************
 * Teensy 3.1 Breadboard pin assignments (MK20DX256)
 * Requires the Teensyduino software with Teensy 3.1 selected in Arduino IDE!
   http://www.pjrc.com/teensy/teensyduino.html
 * CLI build: HARDWARE_MOTHERBOARD=85  make
-* 
+*
 ****************************************************************************************/
 #if MOTHERBOARD == 85
 #define KNOWN_BOARD 1
@@ -2000,111 +2005,156 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
 
 #define LARGE_FLASH        true
 
-/* 
-DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a TeensyBreadboard:
+/***************************************************************************\
+*                                                                           *
+*  PINOUTS                                                                *
+*                                                                           *
+\***************************************************************************/
+
+/*
+	Machine Pin Definitions
+	- make sure to avoid duplicate usage of a pin
+	- comment out pins not in use, as this drops the corresponding code and makes operations faster
+	- Note that the logic levels are +3.3V rather than +5V, so
+
+Teensy 3.1 http://www.pjrc.com/teensy Frescale MK20DX256 carrier:
+
+Front Side:
+                               USB
+           GND       GND |-----#####-----| Vin              ATX +5SB
+     ATX PS_ON         0 |0     VUSB=* F0| AGND
+                       1 |b1           f1| 3.3V             3.3V out, 100mA
+    Z AXIS1 DIR        2 |b2    AREF=* f4| 23 A9  PWM       X AXIS PWM
+   X AXIS ENC A xPWM   3 |b3     A10=* f5| 22 A8  PWM       Y AXIS PWM
+   X AXIS ENC B xPWM   4 |b7     A11=* f6| 21 A7  PWM       Z AXIS 1 PWM          
+   X AXIS ENDST  PWM   5 |d0           f7| 20 A6  PWM       Z AXIS 2 PWM
+   Extruder HTR  PWM   6 |d1           b6| 19 A5            I2C SCL
+        uSD DIN        7 |d2           b5| 18 A4            I2C SDA
+   Y AXIS ENDST        8 |d3 V         b4| 17 A3            Extruder Enable
+        BED HTR  PWM   9 |d6 b 3 G P A d7| 16 A2            Extruder STEP
+         uSD CS  PWM  10 |d7 a V N G 1 d6| 15 A1            Extruder DIR
+     X AXIS DIR       11 |d7 t 3 D M 4 d6| 14 A0            uSD SCK
+       uSD DOUT       12 |d7 * * * * * d6| 13     (led)     Y AXIS DIR
+                         -----------------
+
+Back Side:
 
                                USB
-           GND       GND |-----#####-----| +5V              ATX +5SB
-     ATX PS_ON    PWM 27 |b7   #####   b6| 26    PWM*       Stepper Enable 
-                  PWM  0 |d0           b5| 25    PWM*        
-                  PWM  1 |d1           b4| 24    PWM        
-         X_MIN         2 |d2           b3| 23               MISO_PIN
-         Y_MIN         3 |d3           b2| 22               MOSI_PIN
-         Z_MIN         4 |d4  * *      b1| 21               SCK_PIN       
-                       5 |d5  e e      b0| 20               SDSS              
-                LED    6 |d6  5 4      e7| 19               
-                       7 |d7           e6| 18               
-       LCD  RS         8 |e0             | GND              
-       LCD  EN         9 |e1   a4 a0    R| AREF             
-       LCD  D4        10 |c0   a5 a1   f0| 38 A0            ENC_1           
-       LCD  D5        11 |c1   a6 a2   f1| 39 A1            ENC_2
-       LCD  D6        12 |c2   a7 a3   f2| 40 A2            ENC_CLK
-       LCD  D6        13 |c3           f3| 41 A3            
-      Bed Heat    PWM 14 |c4   V G R   f4| 42 A4            
- Extruder Heat    PWM 15 |c5   c n S   f5| 43 A5            
-           Fan    PWM 16 |c6   c d T   f6| 44 A6            Bed TC
-                      17 |c7   * * *   f7| 45 A7            Extruder TC * 4.7k * +5        
-                         -----------------                  
+                         |-----#####-----|
+                    VUSB |0 0           0|
+                         |0             0|
+                    AREF |0 0           0|
+                     A10 |0 0           0|
+     BED Therm1      A11 |0 0           0|
+  Extrdr Therm1      A13 |0 0         0 0| A12              BED Therm2
+                    3.3v |0 0         0 0| GND
+                      33 |0 0         0 0| 24               Z AXIS1 ENC A
+   Y AXIS ENC A       32 |0 0         0 0| 25               Y AXIS ENC B
+  Z AXIS2 ENDST       31 |0 0         0 0| 26               Z AXIS1 ENC B
+  Z AXIS2 ENC A       30 |0 0         0 0| 27               Z AXIS1 ENDST
+  Z AXIS2 ENC B       29 |0 0         0 0| 28               Z AXIS2 DIR
+                         |0  0 0 0 0 0  0|
+                         -----------------
 
-      Interior E4: 36, INT4
-      Interior E5: 37, INT5
-      Interior PA0-7: 28-35  -- Printrboard and Teensylu use these pins for step & direction:
-             T++ PA Signal  Marlin
-    
-       Z STEP  32 a4  a0 28 X STEP
-       Z DIR   33 a5  a1 29 X DIR
-       E STEP  34 a6  a2 30 Y STEP
-       E DIR   35 a7  a3 31 Y DIR
+
+
+Since FTM1_CH1 is used for the stepper timer, normal PWM on 4 is impossible,
+and PWM on 3 is awkward.
+
+Testing connections:
+
+AGND A0 100K Thermistor
+AGND A1 100K Thermistor
+3.3V A0 4K7
+3.3V A1 4K7
+
+# NPN transistor circuit to control PS_ON
+# 3.3V output through resitor to base
+# PS_ON is 4.7V open circuit, 0.5mA short circuit current
+D0 DP0 1K5 resistor # protect and invert driver of PS_ON
+GND DP0 PS_ON  NPN-2N3904 (E,B,C)
+
+# PWM controllers
+# MOSFET VNP49N04 fully protected MOSFET/OMNIFET
+# 49A, DC-50kHZ frequency, 0.02 Ohm R_DS
+# R_fault=100ohm I_input=500nA
+# (330-100)< Rprot < (6600-100), choose 1k5
+# 3.3V /(R_fault+Rprot) = ~2mA during fault, 500nA normal, so 3.29V V_in
+# 12V/6.8ohms = ~2A, so ~50mOhm R_DS, Pdiss=2Amps^2*.05ohm = 0.2W
+# input, drain, source
+D23 D23P 1k5 resistor -- protect bed output
+D22 D22P 1k5 resistor -- protect extruder output
+
+D23P BedHeat GND MOSFET VNP49N04 (input, drain, source)
+D22P ExtHeat GND MOSFET VNP49N04 (input, drain, source)
+D21P ExtFan GND     MOSFET VNP49N04 (input, drain, source)
+
+# heaters
+12VDC ExtHeat 6R8 resistor
+12VDC BedHeat 3R0 MK1 Heatbed
+12VDC ExtFan  12VDC fan
+
+# endstops
+# Microswitches Normally closed(?)
+# Enable internal pullup?
 
 */
 
-//#ifndef AT90USBxx_TEENSYPP_ASSIGNMENTS  // use Teensyduino Teensy++2.0 pin assignments instead of Marlin alphabetical.
-  //#error  Uncomment #define AT90USBxx_TEENSYPP_ASSIGNMENTS in fastio.h for this config
-  //// or build from command line with:  DEFINES=AT90USBxx_TEENSYPP_ASSIGNMENTS HARDWARE_MOTHERBOARD=84  make
-//#endif
 
 // TODO: needs work here, to define pinout....
 
-#define X_STEP_PIN         0 //  0 Marlin
-#define X_DIR_PIN          1 //  1 Marlin
+
+#define X_STEP_PIN         23 //  0 Marlin
+#define X_DIR_PIN          11 //  1 Marlin
 #define X_ENABLE_PIN       -1
 
-#define Y_STEP_PIN         2 //  2 Marlin
-#define Y_DIR_PIN          3 //  3
+#define Y_STEP_PIN         22 //  2 Marlin
+#define Y_DIR_PIN          13 //  3
 #define Y_ENABLE_PIN       -1    // Shared w/x
 
-#define Z_STEP_PIN         4 //  4
-#define Z_DIR_PIN          5 //  5
+#define Z_STEP_PIN         21 //  4
+#define Z_DIR_PIN          2  //  5
 #define Z_ENABLE_PIN       -1 // Shared w/x
 
-#define E0_STEP_PIN        6 //  6
-#define E0_DIR_PIN         7 //  7
-#define E0_ENABLE_PIN      -1 // Shared w/x
+#define E0_STEP_PIN        16 //  6
+#define E0_DIR_PIN         15 //  7
+#define E0_ENABLE_PIN      17 // Shared w/x
 
-#define HEATER_0_PIN       15 //  21  // Extruder
+#define HEATER_0_PIN       6  //  21  // Extruder
 #define HEATER_1_PIN       -1
 #define HEATER_2_PIN       -1
-#define HEATER_BED_PIN     14 // 20  // Bed
-#define FAN_PIN            16 // 22  // Fan
+#define HEATER_BED_PIN     9  // 20  // Bed
+#define FAN_PIN            -1 // 22  // Fan
 
-#define X_STOP_PIN          2
-#define Y_STOP_PIN          3
-#define Z_STOP_PIN          4
+#define X_STOP_PIN          5
+#define Y_STOP_PIN          8
+#define Z_STOP_PIN          27
 
 // TODO: temperature.cpp still only AVR compatible - much ADC code
-#define TEMP_0_PIN         -1 // Extruder / Analog pin numbering
-#define TEMP_BED_PIN       -1 // Bed / Analog pin numbering
+#define TEMP_0_PIN         A13 // Extruder / Analog pin numbering
+#define TEMP_BED_PIN       A11 // Bed / Analog pin numbering
 #define TEMP_1_PIN         -1
 #define TEMP_2_PIN         -1
 
 #define SDPOWER            -1
-#define SDCARDDETECT       -1		
-#define SDSS               20 // 8
-#define LED_PIN             6
-#define PS_ON_PIN          27
+#define SDCARDDETECT       -1
+#define SDSS               10 // 8
+#define LED_PIN             1
+#define PS_ON_PIN           0
 #define KILL_PIN           -1
 #define ALARM_PIN          -1
 
-#ifndef SDSUPPORT
+//#ifndef SDSUPPORT
 // these pins are defined in the SD library if building with SD support
-  #define SCK_PIN         13
+  #define SS_PIN          10
+  #define SCK_PIN         14
   #define MISO_PIN        12
-  #define MOSI_PIN        11
-#endif
+  #define MOSI_PIN        7
+//#endif
 
-#ifdef ULTIPANEL
-#define LCD_PINS_RS         8
-#define LCD_PINS_ENABLE     9
-#define LCD_PINS_D4        10
-#define LCD_PINS_D5        11
-#define LCD_PINS_D6        12
-#define LCD_PINS_D7        13
-#define BTN_EN1            38
-#define BTN_EN2            39
-#define BTN_ENC            40
-#endif
 
-#endif  // MOTHERBOARD == 84 (Teensy++2.0 Breadboard)
+
+#endif  // MOTHERBOARD == 85 (Teensy 3.1 Breadboard)
 
 
 /****************************************************************************************
@@ -2151,9 +2201,9 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
 #define E0_ENABLE_PIN      13
 
 #define TEMP_0_PIN          0   // MUST USE ANALOG INPUT NUMBERING NOT DIGITAL OUTPUT NUMBERING!!!!!!!!! (pin 33 extruder)
-#define TEMP_1_PIN         -1   
+#define TEMP_1_PIN         -1
 #define TEMP_2_PIN         -1
-#define TEMP_BED_PIN        5   // MUST USE ANALOG INPUT NUMBERING NOT DIGITAL OUTPUT NUMBERING!!!!!!!!! (pin 34 bed)  
+#define TEMP_BED_PIN        5   // MUST USE ANALOG INPUT NUMBERING NOT DIGITAL OUTPUT NUMBERING!!!!!!!!! (pin 34 bed)
 #define SDPOWER            -1
 #define SDSS               4
 #define HEATER_2_PIN       -1
