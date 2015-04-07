@@ -51,9 +51,10 @@
 #include "QuadDecode_def.h"
 
 
-QuadDecode<1> xPosn;			  // Template using FTM1  for X axis Encoder
-QuadDecode<2> yPosn;			  // Template using FTM2  for Y axis Encoder
-
+#ifdef FTM_DECODE
+  QuadDecode<1> xPosn;			  // Template using FTM1  for X axis Encoder
+  QuadDecode<2> yPosn;			  // Template using FTM2  for Y axis Encoder
+#endif
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -521,12 +522,16 @@ void setup()
   // loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
   Config_RetrieveSettings();
 
+  Serial.println("Settings Retrieved");
+
   tp_init();    // Initialize temperature loop
+  Serial.println("Temperature loop running");
   plan_init();  // Initialize planner;
+  Serial.println("Planner running");
  // watchdog_init();                                                     // Temporarily commented for debug
 //  st_init();    // Initialize stepper, this enables interrupts!        // Temporarily commented for debug
-  setup_photpin();
-  servo_init();
+//  setup_photpin();
+//  servo_init();
 
   lcd_init();
  // _delay_ms(1000);	// wait 1sec to display the splash screen

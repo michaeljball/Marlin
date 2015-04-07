@@ -2131,8 +2131,8 @@ D21P ExtFan GND     MOSFET VNP49N04 (input, drain, source)
 #define Z_STOP_PIN          27
 
 // TODO: temperature.cpp still only AVR compatible - much ADC code
-#define TEMP_0_PIN         A13 // Extruder / Analog pin numbering
-#define TEMP_BED_PIN       A11 // Bed / Analog pin numbering
+#define TEMP_0_PIN         A12 // Extruder / Analog pin numbering
+#define TEMP_BED_PIN       A13 // Bed / Analog pin numbering
 #define TEMP_1_PIN         -1
 #define TEMP_2_PIN         -1
 

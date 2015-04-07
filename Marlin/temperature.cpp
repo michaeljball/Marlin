@@ -34,6 +34,14 @@
 #include "temperature.h"
 #include "watchdog.h"
 
+#if defined(__arm__) || defined(CORE_TEENSY) || defined(__MK20DX128__) || defined(__MK20DX256__)// Teensy 3.x
+
+#include "ADC.h"
+ADC *adc = new ADC(); // ADC object for Thermistors on Teensy 3.x
+#endif
+
+
+
 //===========================================================================
 //=============================public variables============================
 //===========================================================================
@@ -408,6 +416,10 @@ void manage_heater()
   float pid_input;
   float pid_output;
 
+	#if defined(__arm__) || defined(CORE_TEENSY) || defined(__MK20DX128__) || defined(__MK20DX256__)// Teensy 3.x
+	update_temp();
+	#endif
+  
   if(temp_meas_ready != true)   //better readability
     return; 
 
@@ -700,6 +712,27 @@ void tp_init()
   //disable RUMBA JTAG in case the thermocouple extension is plugged on top of JTAG connector
   MCUCR=(1<<JTD); 
   MCUCR=(1<<JTD);
+#endif
+
+#if defined(__arm__) || defined(CORE_TEENSY) || defined(__MK20DX128__) || defined(__MK20DX256__)// Teensy 3.x
+
+
+//  ************** Set up Teensy's ADC to read the Thermistors
+
+    pinMode(TEMP_0_PIN, INPUT); //pin A12 single ended
+    pinMode(TEMP_BED_PIN, INPUT); //pin A13 single ended
+
+   ////// ADC1 /////
+    adc->setAveraging(16, ADC_1); // set number of averages
+    adc->setResolution(10, ADC_1); // set bits of resolution
+    adc->setConversionSpeed(ADC_VERY_LOW_SPEED, ADC_1); // change the conversion speed
+    adc->setSamplingSpeed(ADC_VERY_LOW_SPEED, ADC_1); // change the sampling speed
+
+    // always call the compare functions after changing the resolution!
+    //adc->enableCompare(1.0/3.3*adc->getMaxValue(ADC_1), 0, ADC_1); // measurement will be ready if value < 1.0V
+    adc->enableCompareRange(1.0*adc->getMaxValue(ADC_1)/3.3, 2.0*adc->getMaxValue(ADC_1)/3.3, 0, 1, ADC_1); 
+   // ready if value lies out of [1.0,2.0] V
+
 #endif
   
   // Finish init of mult extruder arrays 
@@ -1037,6 +1070,10 @@ int read_max6675()
 #if defined(__AVR__)
 // Timer 0 is shared with millies
 ISR(TIMER0_COMPB_vect)
+
+#elif defined(__arm__) || defined(CORE_TEENSY) || defined(__MK20DX128__) || defined(__MK20DX256__)// Teensy 3.x
+void update_temp()
+#endif
 {
   //these variables are only accesible from the ISR, but static, so they don't lose their value
   static unsigned char temp_count = 0;
@@ -1105,6 +1142,7 @@ ISR(TIMER0_COMPB_vect)
   pwm_count += (1 << SOFT_PWM_SCALE);
   pwm_count &= 0x7f;
   
+#if defined(__AVR__)
   switch(temp_state) {
     case 0: // Prepare TEMP_0
       #if defined(TEMP_0_PIN) && (TEMP_0_PIN > -1)
@@ -1194,6 +1232,24 @@ ISR(TIMER0_COMPB_vect)
 //      SERIAL_ERRORLNPGM("Temp measurement error!");
 //      break;
   }
+#else   // Teensy...   ***********  reverse this condition before commiting.
+	raw_temp_0_value = adc->analogRead(TEMP_0_PIN, ADC_1);
+	raw_temp_bed_value = adc->analogRead(TEMP_BED_PIN, ADC_1);
+
+/*  // Debug 
+    Serial.print("Pin: ");
+    Serial.print(TEMP_0_PIN);
+    Serial.print(", raw_temp_0_value ADC1: ");
+    Serial.println(raw_temp_0_value*3.3/adc->getMaxValue(ADC_1), DEC);
+
+    Serial.print("Pin: ");
+    Serial.print(TEMP_BED_PIN);
+    Serial.print(", raw_temp_bed_value ADC1: ");
+    Serial.println(raw_temp_bed_value*3.3/adc->getMaxValue(ADC_1), DEC);
+*/
+
+#endif
+
     
   if(temp_count >= OVERSAMPLENR) // 8 * 16 * 1/(16000000/64/256)  = 131ms.
   {
@@ -1276,7 +1332,7 @@ ISR(TIMER0_COMPB_vect)
        target_temperature_bed = 0;
        bed_max_temp_error();
     }
-#endif
+
   }
   
 #ifdef BABYSTEPPING
