@@ -1232,25 +1232,44 @@ void update_temp()
 //      SERIAL_ERRORLNPGM("Temp measurement error!");
 //      break;
   }
-#else   // Teensy...   ***********  reverse this condition before commiting.
-	raw_temp_0_value = adc->analogRead(TEMP_0_PIN, ADC_1);
-	raw_temp_bed_value = adc->analogRead(TEMP_BED_PIN, ADC_1);
 
-/*  // Debug 
+
+
+#else   // Teensy...   ***********  reverse this condition before commiting.
+	raw_temp_0_value = adc->analogRead(TEMP_0_PIN, ADC_1); 
+	raw_temp_bed_value = adc->analogRead(TEMP_BED_PIN, ADC_1); 
+
+        current_temperature_raw[0] = raw_temp_0_value;
+        current_temperature_bed_raw = raw_temp_bed_value;
+
+
+/*
+ // Debug 
     Serial.print("Pin: ");
     Serial.print(TEMP_0_PIN);
     Serial.print(", raw_temp_0_value ADC1: ");
-    Serial.println(raw_temp_0_value*3.3/adc->getMaxValue(ADC_1), DEC);
+   // Serial.println(raw_temp_0_value*3.3/adc->getMaxValue(ADC_1), DEC);
+    Serial.print(raw_temp_0_value, DEC);
 
-    Serial.print("Pin: ");
+    Serial.print("    Pin: ");
     Serial.print(TEMP_BED_PIN);
     Serial.print(", raw_temp_bed_value ADC1: ");
-    Serial.println(raw_temp_bed_value*3.3/adc->getMaxValue(ADC_1), DEC);
+   // Serial.println(raw_temp_bed_value*3.3/adc->getMaxValue(ADC_1), DEC);
+    Serial.println(raw_temp_bed_value, DEC);
 */
+
+   temp_meas_ready = true;
+    temp_count = 0;
+    raw_temp_0_value = 0;
+    raw_temp_1_value = 0;
+    raw_temp_2_value = 0;
+    raw_temp_bed_value = 0;
+
+
 
 #endif
 
-    
+/*    
   if(temp_count >= OVERSAMPLENR) // 8 * 16 * 1/(16000000/64/256)  = 131ms.
   {
     if (!temp_meas_ready) //Only update the raw values if they have been read. Else we could be updating them during reading.
@@ -1322,7 +1341,7 @@ void update_temp()
     }
 #endif
   
-  /* No bed MINTEMP error? */
+  // No bed MINTEMP error? 
 #if defined(BED_MAXTEMP) && (TEMP_SENSOR_BED != 0)
 # if HEATER_BED_RAW_LO_TEMP > HEATER_BED_RAW_HI_TEMP
     if(current_temperature_bed_raw <= bed_maxttemp_raw) {
@@ -1342,19 +1361,22 @@ void update_temp()
    
     if(curTodo>0)
     {
-      babystep(axis,/*fwd*/true);
+      babystep(axis,true);  //FWD
       babystepsTodo[axis]--; //less to do next time
     }
     else
     if(curTodo<0)
     {
-      babystep(axis,/*fwd*/false);
+      babystep(axis,false);  //FWD
       babystepsTodo[axis]++; //less to do next time
     }
+
+
   }
 #endif //BABYSTEPPING
+*/
 }
-#endif // __AVR__
+//#endif // __AVR__
 
 #ifdef PIDTEMP
 // Apply the scale factors to the PID values
