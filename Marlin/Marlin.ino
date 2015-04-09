@@ -34,6 +34,12 @@
 #include "Configuration.h"
 #include "pins.h"
 
+#include <SD.h>
+
+#include <ADC.h>
+
+
+
 #ifdef ULTRA_LCD
   #if defined(LCD_I2C_TYPE_PCF8575) 
     #include <Wire.h>
@@ -52,8 +58,8 @@
 #include <SPI.h>
 #endif
 
-#if defined(DIGIPOT_I2C)
-  #include <Wire.h>
-#endif
+#include <Wire.h>
+
+#include <BlinkM.h>
 
 

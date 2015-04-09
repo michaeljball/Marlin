@@ -56,9 +56,13 @@
   QuadDecode<2> yPosn;			  // Template using FTM2  for Y axis Encoder
 #endif
 
+long int position_update;		//  **********  Set up proper timer...
+
+
+
 #ifdef BLINKM
-#include "BlinkM.h"
-#include "Wire.h"
+#include <BlinkM.h>
+#include <Wire.h>
 #endif
 
 #if NUM_SERVOS > 0
@@ -540,6 +544,15 @@ void setup()
     SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
   #endif
 
+
+  xPosn.setup(); yPosn.setup();	                // Initialize Quad Decode counters
+  xPosn.start(); yPosn.start();                 // Start Quad Decode position count	                       
+
+  position_update = millis();
+
+  Serial.println("Encoders running");
+
+
   #ifdef DIGIPOT_I2C
     digipot_i2c_init();
   #endif
@@ -590,6 +603,20 @@ void loop()
   manage_heater();
   manage_inactivity();
   checkHitEndstops();
+
+
+  if(millis() - position_update > 2500)  // only need to check fan state very infrequently
+  {
+  // *****************************************  THIS IS TEMPORARY DEBUG  REMOVE IMMEDIATELY!!  *********
+	Serial.print(xPosn.calcPosn()); Serial.print("   "); Serial.println(yPosn.calcPosn()); 
+
+    position_update = millis();
+
+  }  
+
+
+
+
   lcd_update();
 }
 

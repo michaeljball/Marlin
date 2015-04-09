@@ -2146,10 +2146,10 @@ D21P ExtFan GND     MOSFET VNP49N04 (input, drain, source)
 
 //#ifndef SDSUPPORT
 // these pins are defined in the SD library if building with SD support
-  #define SS_PIN          10
-  #define SCK_PIN         14
-  #define MISO_PIN        12
-  #define MOSI_PIN        7
+  #define SS         10
+  #define SCK         14
+  #define MISO        12
+  #define MOSI        7
 //#endif
 
 

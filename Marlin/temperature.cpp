@@ -527,6 +527,7 @@ void manage_heater()
   {
     checkExtruderAutoFans();
     extruder_autofan_last_check = millis();
+
   }  
   #endif       
   
