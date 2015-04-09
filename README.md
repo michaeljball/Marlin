@@ -1,9 +1,30 @@
 #Teensy 3.1 Porting Project#
 
-This copy of Marlin is an initial effort to port to Teensy 3.1 (32 bit ARM).
+This copy of Marlin is an initial effort to port to Teensy 3.1 (32 bit ARM) by Paul PaulStoffregen
 
-Currently (June 21, 2014) it compiles without error, but it utterly untested.  This section will be updated as the code is tested on real hardware.
+Forked from his git:  https://github.com/PaulStoffregen/Marlin
 
+This version resides at:  https://github.com/michaeljball/Marlin
+
+
+Currently (April 9th, 2015) it compiles without error, and connects to Repetier Host.
+
+It has several library dependencies to allow it to compile.  These were originally inline, but made the source unwieldly, and risked failing to keep these libraries up to date.
+
+================================================
+BlinkM  Library for the BlinkM RGB I2C smart LED  http://thingm.com/products/blinkm
+Sdcard Library to support SD memory cards         https://github.com/PaulStoffregen/SD 
+ADC Library to support Teensy 3.x ADC 		  https://github.com/pedvide/ADC
+Flexitimer2 Library for timer functions		  https://github.com/PaulStoffregen/FlexiTimer2
+PID Library to support PID motor and heaters	  https://github.com/br3ttb/Arduino-PID-Library
+QuadDecode Library to support FTM encoders	  https://github.com/michaeljball/QuadDecode
+
+
+The QuadDecode library was generously provided by Trudy Benjamin
+https://forum.pjrc.com/threads/26803-Hardware-Quadrature-Code-for-Teensy-3-x 
+
+
+===================================================================================
 Here's the discussion regarding this porting effort.  Help is needed with testing!!
 
 http://forum.pjrc.com/threads/26015-3D-Printer-Software-with-Teensy-3-1
