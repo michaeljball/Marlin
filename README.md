@@ -1,6 +1,6 @@
 #Teensy 3.1 Porting Project#
 
-This copy of Marlin is an initial effort to port to Teensy 3.1 (32 bit ARM) by Paul PaulStoffregen
+This copy of Marlin is an initial effort to port to Teensy 3.1 (32 bit ARM) by Paul Stoffregen
 
 Forked from his git:  https://github.com/PaulStoffregen/Marlin
 
@@ -13,15 +13,25 @@ It has several library dependencies to allow it to compile.  These were original
 
 ================================================
 BlinkM  Library for the BlinkM RGB I2C smart LED  http://thingm.com/products/blinkm
+
 Sdcard Library to support SD memory cards         https://github.com/PaulStoffregen/SD 
+
 ADC Library to support Teensy 3.x ADC 		  https://github.com/pedvide/ADC
+
 Flexitimer2 Library for timer functions		  https://github.com/PaulStoffregen/FlexiTimer2
+
 PID Library to support PID motor and heaters	  https://github.com/br3ttb/Arduino-PID-Library
+
 QuadDecode Library to support FTM encoders	  https://github.com/michaeljball/QuadDecode
 
 
 The QuadDecode library was generously provided by Trudy Benjamin
 https://forum.pjrc.com/threads/26803-Hardware-Quadrature-Code-for-Teensy-3-x 
+
+===================================================================================
+Development on this particular fork is to replace stepper motor functionality with
+closed loop Quadrature Decoder and DC motor (servomotor) PID control for **Absolute**
+positioning of the AXIS.
 
 
 ===================================================================================
