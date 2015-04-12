@@ -35,8 +35,9 @@
 #include "pins.h"
 
 #include <SD.h>
-
+#include <SPI.h>
 #include <ADC.h>
+#include <PID_v1.h> 
 
 
 

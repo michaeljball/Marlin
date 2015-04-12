@@ -11,6 +11,7 @@ Currently (April 9th, 2015) it compiles without error, and connects to Repetier 
 
 It has several library dependencies to allow it to compile.  These were originally inline, but made the source unwieldly, and risked failing to keep these libraries up to date.
 
+Library Dependencies:
 ================================================
 BlinkM  Library for the BlinkM RGB I2C smart LED  http://thingm.com/products/blinkm
 

@@ -49,6 +49,8 @@
 #include "math.h"
 #include "QuadDecode.h"
 #include "QuadDecode_def.h"
+#include <PID_v1.h> 
+#include <SPI.h>
 
 
 #ifdef FTM_DECODE
@@ -57,6 +59,8 @@
 #endif
 
 long int position_update;		//  **********  Set up proper timer...
+
+extern long count_position[];
 
 
 
@@ -342,6 +346,36 @@ unsigned long chdkHigh = 0;
 boolean chdkActive = false;
 #endif
 
+
+//===========================================================================
+//========================PID Control Variables =============================
+//===========================================================================
+
+
+#define FORWARD      0
+#define BACKWARD     1
+
+/*working variables for PID routines*/
+// Tuning parameters
+float KpX=10,  KpY=10;                        //Initial Proportional Gain 
+float KiX=50,   KiY=50;                       //Initial Integral Gain 
+float KdX=0.2,  KdY=0.2;                      //Initial Differential Gain 
+
+double Spd=255, XaxisSpd,  YaxisSpd;        // Carriage speed from 0-255
+
+double XaxisSetpoint=0, XoldSetpoint=0;      // Taget position for carriage
+double YaxisSetpoint=0, YoldSetpoint=0;      // Taget position for carriage
+double XaxisPos=0, YaxisPos=0;	             // Realtime values of X,Y
+volatile int32_t rtX=0, rtY=0;	             // Realtime values of X,Y
+volatile bool zero_XaxisPos=0, zero_rtY=0;      // Zero values of X,Y
+
+// Instantiate X and Y axis PID controls
+PID XaxisPID(&XaxisPos, &XaxisSpd, &XaxisSetpoint, KpX, KiX, KdX, DIRECT); 
+PID YaxisPID(&YaxisPos, &YaxisSpd, &YaxisSetpoint, KpY, KiY, KdY, DIRECT); 
+const int sampleRate = 1;                 // Calling compute() from a timer interrupt.
+
+
+
 //===========================================================================
 //=============================Routines======================================
 //===========================================================================
@@ -480,6 +514,81 @@ void servo_init()
   #endif
 }
 
+
+
+void setup_PIDs()                      //  Initialize PID control for X and Y DC motors
+{
+  pinMode(X_STEP_PIN, OUTPUT);
+  analogWriteFrequency(X_STEP_PIN, 46875);     // Place PWM freq outside of audible range
+  pinMode(X_DIR_PIN, OUTPUT);
+  
+  pinMode(Y_STEP_PIN, OUTPUT);
+  analogWriteFrequency(Y_STEP_PIN, 46875);     // Place PWM freq outside of audible range
+  pinMode(Y_DIR_PIN, OUTPUT);
+  
+  XaxisPID.SetMode(AUTOMATIC);                  // Turn on the PID loop 
+  XaxisPID.SetSampleTime(sampleRate);           // Sets the sample rate 
+  XaxisPID.SetOutputLimits(0-Spd,Spd);           // Set max speed for DC motors
+
+  YaxisPID.SetMode(AUTOMATIC);                  // Turn on the PID loop 
+  YaxisPID.SetSampleTime(sampleRate);           // Sets the sample rate 
+  YaxisPID.SetOutputLimits(0-Spd,Spd);           // Set max speed for DC motors
+  
+}
+
+void update_PIDs()                      //  Update position for X and Y DC motors based on Encoder / Target
+{
+    rtX=xPosn.calcPosn();     // Get current Xaxis position
+    XaxisPos=rtX; 	            // Realtime values of X,Y
+    
+    if(relative_mode == true) XaxisSetpoint += destination[X_AXIS];
+    else XaxisSetpoint = destination[X_AXIS];      // Set PID target to where Marlin thinks it should be
+
+    XaxisPID.Compute(); 
+    analogWrite(X_STEP_PIN,abs(XaxisSpd));              // Apply PID speed to motor
+    if(XaxisSpd < 0) {  // Determine direction of travel
+      digitalWrite(X_DIR_PIN,BACKWARD);  
+    } else {
+      digitalWrite(X_DIR_PIN,FORWARD);
+    }      
+    if(XaxisPos == destination[X_AXIS]) current_position[X_AXIS] = destination[X_AXIS];
+    rtY=yPosn.calcPosn();     // Get current Xaxis position
+    YaxisPos=rtY; 	            // Realtime values of X,Y
+   
+    if(relative_mode == true) YaxisSetpoint += destination[Y_AXIS];
+    else YaxisSetpoint = destination[Y_AXIS];      // Set PID target to where Marlin thinks it should be
+
+    YaxisPID.Compute(); 
+    analogWrite(Y_STEP_PIN,abs(YaxisSpd));              // Apply PID speed to motor
+    if(YaxisSpd < 0) {  // Determine direction of travel
+      digitalWrite(Y_DIR_PIN,BACKWARD);  
+    } else {
+      digitalWrite(Y_DIR_PIN,FORWARD);
+    }      
+    if(YaxisPos == destination[Y_AXIS]) current_position[Y_AXIS] = destination[Y_AXIS];
+  
+}
+
+/*
+void sdcard_init()
+{
+    // Configure SPI for the SD card pins
+  SPI.setMISO(12);  // SDcard has MOSI on pin 7
+  SPI.setMOSI(7);  // SDcard has MOSI on pin 7
+  SPI.setSCK(14);  // SDcard has SCK on pin 14
+
+  // First, detect the card
+  int status = card.init(10); // Audio shield has SD card SD on pin 10
+  if (status) {
+    Serial.println("SD card is connected :-)");
+  } else {
+    Serial.println("SD card is not connected or unusable :-(");
+    return;
+  }
+}
+
+*/
+
 void setup()
 {
   setup_killpin();
@@ -552,6 +661,9 @@ void setup()
 
   Serial.println("Encoders running");
 
+  setup_PIDs();
+  Serial.println("X/Y Axis PID loops running");
+ 
 
   #ifdef DIGIPOT_I2C
     digipot_i2c_init();
@@ -599,6 +711,9 @@ void loop()
     buflen = (buflen-1);
     bufindr = (bufindr + 1)%BUFSIZE;
   }
+  
+  update_PIDs();        // Check current position, and update as required.
+
   //check heater every n milliseconds
   manage_heater();
   manage_inactivity();
@@ -608,9 +723,10 @@ void loop()
   if(millis() - position_update > 2500)  // only need to check fan state very infrequently
   {
   // *****************************************  THIS IS TEMPORARY DEBUG  REMOVE IMMEDIATELY!!  *********
-	Serial.print(xPosn.calcPosn()); Serial.print("   "); Serial.println(yPosn.calcPosn()); 
+	Serial.print("XTgt: "); Serial.print(XaxisSetpoint); Serial.print("   YTgt: "); Serial.println(YaxisSetpoint); 
+	Serial.print("XPos: "); Serial.print(xPosn.calcPosn()); Serial.print("   YPos: "); Serial.println(yPosn.calcPosn()); 
 
-    position_update = millis();
+     position_update = millis();
 
   }  
 
