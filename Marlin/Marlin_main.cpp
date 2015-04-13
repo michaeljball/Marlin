@@ -1268,7 +1268,8 @@ static void homeaxis(int axis) {
 
   }
 }
-#define HOMEAXIS(LETTER) homeaxis(LETTER##_AXIS)
+//#define HOMEAXIS(LETTER) homeaxis(LETTER##_AXIS)
+#define HOMEAXIS(LETTER) destination[LETTER##_AXIS]=0        // Update PID target to home  *******************
 void refresh_cmd_timeout(void)
 {
   previous_millis_cmd = millis();
@@ -1362,11 +1363,12 @@ void process_commands()
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
 
-      st_synchronize();
+      //st_synchronize();
       codenum += millis();  // keep track of when we started waiting
       previous_millis_cmd = millis();
       while(millis()  < codenum ){
         manage_heater();
+        update_PIDs();
         manage_inactivity();
         lcd_update();
       }
